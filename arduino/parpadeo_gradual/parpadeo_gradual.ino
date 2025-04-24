@@ -3,8 +3,8 @@
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
 
-  gpio_viewer.connectToWifi("SSID");
-  gpio_viewer.begin();
+  //gpio_viewer.connectToWifi("SSID");
+  //gpio_viewer.begin();
 }
 
 void loop() {
