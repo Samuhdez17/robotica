@@ -1,4 +1,4 @@
-#include "notas.txt"
+#include <notas.txt>
 
 int pinBuzzer = 13;
 
@@ -56,7 +56,7 @@ void setup() {
 }
 
 void loop() {
-    cantar(1);
+    cantar(2);
 }
 
 void cantar(int cancion){
