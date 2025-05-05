@@ -1,5 +1,10 @@
+#include <gpio_viewer.h>
+
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
+
+  //gpio_viewer.connectToWifi("SSID");
+  //gpio_viewer.begin();
 }
 
 void loop() {
