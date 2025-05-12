@@ -39,29 +39,119 @@
 // ESTRUCTURA DEL PROTOTHREAD
 #include <pt.h>
 
-static struct pt semaforos;
+static struct pt semC1;
+static struct pt semC2;
+static struct pt semC3;
+static struct pt semC4;
+
+static struct pt semP1;
+static struct pt semP1;
+static struct pt semP1;
+
+static struct pt pulsador1;
+static struct pt pulsador1;
+static struct pt pulsador1;
 long t = millis();
 
-static int ptSemaforoCarretera(struct pt *pt) {
+static int ptSemC1(struct pt *pt) {
   PT_BEGIN(pt);
+
   while (1) {
+    t = millis();
     semaforo1('v');
-    semaforo4('v');
+    PT_WAIT_WHILE(pt, (t + 2000) < millis());
 
-    semaforo2('r');
-    semaforo3('r');
-    PT_WAIT_WHILE(semaforos, (t + 1500) < millis());
-
+    t = millis();
     semaforo1('a');
-    PT_WAIT_WHILE(semaforos, (t + 1500) < millis());
-
+    PT_WAIT_WHILE(pt, (t + 1500) < millis());
+    
+    t = millis();
     semaforo1('r');
-    PT_WAIT_WHILE(semaforos, (t + 1500) < millis());
+    PT_WAIT_WHILE(pt, (t + 3500) < millis());
+
+    t = millis();
+    semaforo1('a');
+    PT_WAIT_WHILE(pt, (t + 1500) < millis());
   }
+
+  PT_END(pt);
+}
+
+static int ptSemC2(struct pt *pt) {
+  PT_BEGIN(pt);
+
+  while (1) {
+    t = millis();
+    semaforo2('r');
+    PT_WAIT_WHILE(pt, (t + 3500) < millis());
+
+    t = millis();
+    semaforo2('a');
+    PT_WAIT_WHILE(pt, (t + 1500) < millis());
+    
+    t = millis();
+    semaforo2('r');
+    PT_WAIT_WHILE(pt, (t + 2000) < millis());
+
+    t = millis();
+    semaforo2('a');
+    PT_WAIT_WHILE(pt, (t + 1500) < millis());
+  }
+
+  PT_END(pt);
+}
+
+static int ptSemC3(struct pt *pt) {
+  PT_BEGIN(pt);
+
+  while (1) {
+    t = millis();
+    semaforo3('r');
+    PT_WAIT_WHILE(pt, (t + 3500) < millis());
+
+    t = millis();
+    semaforo3('a');
+    PT_WAIT_WHILE(pt, (t + 1500) < millis());
+    
+    t = millis();
+    semaforo3('r');
+    PT_WAIT_WHILE(pt, (t + 2000) < millis());
+
+    t = millis();
+    semaforo3('a');
+    PT_WAIT_WHILE(pt, (t + 1500) < millis());
+  }
+
+  PT_END(pt);
+}
+
+static int ptSemC4(struct pt *pt) {
+  PT_BEGIN(pt);
+
+  while (1) {
+    t = millis();
+    semaforo4('v');
+    PT_WAIT_WHILE(pt, (t + 2000) < millis());
+
+    t = millis();
+    semaforo4('a');
+    PT_WAIT_WHILE(pt, (t + 1500) < millis());
+
+    t = millis();
+    semaforo4('r');
+    PT_WAIT_WHILE(pt, (t + 3500) < millis());
+
+    t = millis();
+    semaforo4('a');
+    PT_WAIT_WHILE(pt, (t + 1500) < millis());
+  }
+
   PT_END(pt);
 }
 
 void setup() {
+  iniciarSemaforos();
+
   // Semaforos
   pinMode(sem1V, OUTPUT);
   pinMode(sem1A, OUTPUT);
@@ -89,11 +179,14 @@ void setup() {
   pinMode(pulsador2, INPUT);
   pinMode(pulsador3, INPUT);
 
-  PT_INIT(&semaforos);
+  PT_INIT(&semaforo1);
 }
 
 void loop() {
-  ptSemaforoCarretera(semaforos);
+  ptSemC1(&semaforo1);
+  ptSemC2(&semaforo2);
+  ptSemC3(&semaforo3);
+  ptSemC4(&semaforo4);
 }
 
 void semaforo1(char estado) {
