@@ -1,16 +1,17 @@
 // ULTRASONIDOS
-const int emisorOnda = 18;
-const int receptorOnda = 5;
-int cm, duracion;
+#define emisorOnda   27
+#define receptorOnda 14
 
 //LED
-const int rojo = 17;
-const int ambar = 15;
-const int verde = 4;
+#define rojo 25
+#define ambar 33
+#define verde 32
 
 //Constantes
-const int on = HIGH;
-const int off = LOW;
+#define on HIGH
+#define off LOW
+
+int cm, duracion;
 
 void setup() {
   // ULTRASONIDOS
@@ -25,6 +26,11 @@ void setup() {
 
   //Serial para comprobacion
   Serial.begin(9600);
+
+  digitalWrite(rojo, on);
+  digitalWrite(verde, on);
+  digitalWrite(ambar, on);
+  
 }
 
 void loop() {
@@ -36,10 +42,11 @@ void loop() {
 
   duracion = pulseIn(receptorOnda, on);
 
-  cm = duracion / 58;
+  cm = duracion / 59;
 
   Serial.print("durecion: ");
-  Serial.println(duracion);
+  Serial.println(cm);
+  
   //Condiciones para encendido del LedRGB
   if (cm < 0 && cm > 325) {
     ledOff();  //En caso de ser un valor fuera del rango no se enciende
@@ -73,8 +80,6 @@ void loop() {
   }
 
   else ledColorVerde();  //Si hay una distancia mas que suficiente de activa con un color verde fijo
-
-  Serial.println(cm);
 }
 
 // Metodos para los colores del LedRGB
