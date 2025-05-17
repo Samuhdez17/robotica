@@ -150,9 +150,8 @@ static int ptSemC4(struct pt *pt) {
 }
 
 void setup() {
-  //iniciarSemaforos();
-  semaforosOff();
-
+  iniciarSemaforos();
+  
   // Semaforos
   pinMode(sem1V, OUTPUT);
   pinMode(sem1A, OUTPUT);
@@ -197,16 +196,12 @@ void loop() {
   estadoSemaforo(3, 'v');
   estadoSemaforo(4, 'v');
 
-  if (estadoBoton1 == on) digitalWrite(peaton1, on);
-  if (estadoBoton2 == on) digitalWrite(peaton2, on);
+  if (estadoBoton1 == off) digitalWrite(peaton1, on);
+  if (estadoBoton2 == off) digitalWrite(peaton2, on);
   if (estadoBoton3 == on) digitalWrite(peaton3, on);
 
   delay(500);
-
-  estadoBoton1 = digitalRead(pulsador1);
-  estadoBoton2 = digitalRead(pulsador2);
-  estadoBoton3 = digitalRead(pulsador3);
-
+  
   estadoSemaforo(1, 'a');
   estadoSemaforo(2, 'a');
   estadoSemaforo(3, 'a');
@@ -217,10 +212,6 @@ void loop() {
   if (estadoBoton3 == on) digitalWrite(peaton3, on);
 
   delay(500);
-
-  estadoBoton1 = digitalRead(pulsador1);
-  estadoBoton2 = digitalRead(pulsador2);
-  estadoBoton3 = digitalRead(pulsador3);
 
   estadoSemaforo(1, 'r');
   estadoSemaforo(2, 'r');
