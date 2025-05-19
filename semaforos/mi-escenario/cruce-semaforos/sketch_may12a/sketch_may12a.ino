@@ -18,9 +18,9 @@
 #define sem3R 12
 
 // Semaforo 4
-#define sem4V 467
-#define sem4A 1
-#define sem4R 1
+#define sem4V 4
+#define sem4A 17
+#define sem4R 16
 
 // Peaton 1
 #define peaton1 35
@@ -67,7 +67,7 @@ static int ptSemC1(struct pt *pt) {
     
     t = millis();
     estadoSemaforo(1, 'r');
-    PT_WAIT_WHILE(pt, (t + 3500) < millis());
+    PT_WAIT_WHILE(pt, (t + 3000) < millis());
 
     t = millis();
     estadoSemaforo(1, 'a');
@@ -83,7 +83,7 @@ static int ptSemC2(struct pt *pt) {
   while (1) {
     t = millis();
     estadoSemaforo(2, 'r');
-    PT_WAIT_WHILE(pt, (t + 3500) < millis());
+    PT_WAIT_WHILE(pt, (t + 3000) < millis());
 
     t = millis();
     estadoSemaforo(2, 'a');
@@ -107,7 +107,7 @@ static int ptSemC3(struct pt *pt) {
   while (1) {
     t = millis();
     estadoSemaforo(3, 'r');
-    PT_WAIT_WHILE(pt, (t + 3500) < millis());
+    PT_WAIT_WHILE(pt, (t + 3000) < millis());
 
     t = millis();
     estadoSemaforo(3, 'a');
@@ -139,7 +139,7 @@ static int ptSemC4(struct pt *pt) {
 
     t = millis();
     estadoSemaforo(4, 'r');
-    PT_WAIT_WHILE(pt, (t + 3500) < millis());
+    PT_WAIT_WHILE(pt, (t + 3000) < millis());
 
     t = millis();
     estadoSemaforo(4, 'a');
@@ -196,11 +196,15 @@ void loop() {
   estadoSemaforo(3, 'v');
   estadoSemaforo(4, 'v');
 
-  if (estadoBoton1 == off) digitalWrite(peaton1, on);
-  if (estadoBoton2 == off) digitalWrite(peaton2, on);
+  if (estadoBoton1 == on) digitalWrite(peaton1, on);
+  if (estadoBoton2 == on) digitalWrite(peaton2, on);
   if (estadoBoton3 == on) digitalWrite(peaton3, on);
 
   delay(500);
+
+  estadoBoton1 = digitalRead(pulsador1);
+  estadoBoton2 = digitalRead(pulsador2);
+  estadoBoton3 = digitalRead(pulsador3);
   
   estadoSemaforo(1, 'a');
   estadoSemaforo(2, 'a');
@@ -212,6 +216,10 @@ void loop() {
   if (estadoBoton3 == on) digitalWrite(peaton3, on);
 
   delay(500);
+
+  estadoBoton1 = digitalRead(pulsador1);
+  estadoBoton2 = digitalRead(pulsador2);
+  estadoBoton3 = digitalRead(pulsador3);
 
   estadoSemaforo(1, 'r');
   estadoSemaforo(2, 'r');

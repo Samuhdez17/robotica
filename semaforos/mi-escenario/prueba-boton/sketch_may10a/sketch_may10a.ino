@@ -1,5 +1,5 @@
-#define boton 12
-#define ledRojo 15
+#define boton 15
+#define ledRojo 12
 
 bool estadoLED = false;  // Variable para almacenar el estado del LED
 
