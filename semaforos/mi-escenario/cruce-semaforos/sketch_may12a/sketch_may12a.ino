@@ -23,13 +23,13 @@
 #define sem4R 16
 
 // Peaton 1
-#define peaton1 35
+#define peaton1 35 // Aqui hay un segundo semaforo conectado en paralelo, con lo que son el mismo
 
 // Peaton 2
-#define peaton2 5
+#define peaton2 5 // Aqui hay un segundo semaforo conectado en paralelo, con lo que son el mismo
 
 // Peaton 3
-#define peaton3 2
+#define peaton3 2 // Aqui hay un segundo semaforo conectado en paralelo, con lo que son el mismo
  
 // Pulsadores
 #define pulsador1 32 
@@ -53,6 +53,14 @@ static struct pt puls2;
 static struct pt puls3;
 long t = millis();
 
+bool peatonEn1 = false;
+bool peatonEn2 = false;
+bool peatonEn3 = false;
+
+bool darPasoEn1 = false;
+bool darPasoEn2 = false;
+bool darPasoEn3 = false;
+
 static int ptSemC1(struct pt *pt) {
   PT_BEGIN(pt);
 
@@ -68,6 +76,15 @@ static int ptSemC1(struct pt *pt) {
     t = millis();
     estadoSemaforo(1, 'r');
     PT_WAIT_WHILE(pt, (t + 3000) < millis());
+    if (peatonEn1) {
+      peatonEn1 = false;
+      darPasoEn1 = true;
+
+      t = millis();
+      PT_WAIT_WHILE(pt, (t + 3000) < millis());
+
+      darPasoEn1 = false;
+    }
 
     t = millis();
     estadoSemaforo(1, 'a');
@@ -84,6 +101,15 @@ static int ptSemC2(struct pt *pt) {
     t = millis();
     estadoSemaforo(2, 'r');
     PT_WAIT_WHILE(pt, (t + 3000) < millis());
+    if (peatonEn2) {
+      darPasoEn2 = true;
+      peatonEn2 = false;
+
+      t = millis();
+      PT_WAIT_WHILE(pt, (t + 3000) < millis());
+
+      darPasoEn2 = false;
+    }
 
     t = millis();
     estadoSemaforo(2, 'a');
@@ -108,6 +134,15 @@ static int ptSemC3(struct pt *pt) {
     t = millis();
     estadoSemaforo(3, 'r');
     PT_WAIT_WHILE(pt, (t + 3000) < millis());
+    if (peatonEn3) {
+      darPasoEn3 = true;
+      peatonEn3 = false;
+
+      t = millis();
+      PT_WAIT_WHILE(pt, (t + 3000) < millis());
+
+      darPasoEn3 = false;
+    }
 
     t = millis();
     estadoSemaforo(3, 'a');
@@ -149,6 +184,131 @@ static int ptSemC4(struct pt *pt) {
   PT_END(pt);
 }
 
+static int ptSemP1(struct pt *pt) {
+  PT_BEGIN(pt);
+
+  while (darPasoEn1) {
+    digitalWrite(peaton1, on);
+
+    t = millis();
+    PT_WAIT_WHILE(pt, (t + 1500) < millis());
+
+    long tiempoBucle = millis();
+    while (millis() - tiempoBucle < 1500) {
+      digitalWrite(peaton1, off);
+      t = millis();
+      PT_WAIT_WHILE(pt, millis() - t < 250);
+
+      digitalWrite(peaton1, on);
+      t = millis();
+      PT_WAIT_WHILE(pt, millis() - t < 250);
+    }
+
+    digitalWrite(peaton1, off);
+  }
+
+  PT_END(pt);
+}
+static int ptSemP2(struct pt *pt) {
+  PT_BEGIN(pt);
+
+  while (darPasoEn2) {
+    digitalWrite(peaton2, on);
+
+    t = millis();
+    PT_WAIT_WHILE(pt, (t + 1500) < millis());
+
+    long tiempoBucle = millis();
+    while (millis() - tiempoBucle < 1500) {
+      digitalWrite(peaton2, off);
+      t = millis();
+      PT_WAIT_WHILE(pt, millis() - t < 250);
+
+      digitalWrite(peaton2, on);
+      t = millis();
+      PT_WAIT_WHILE(pt, millis() - t < 250);
+    }
+
+    digitalWrite(peaton2, off);
+  }
+
+  PT_END(pt);
+}
+static int ptSemP3(struct pt *pt) {
+  PT_BEGIN(pt);
+
+  while (darPasoEn3) {
+    digitalWrite(peaton3, on);
+
+    t = millis();
+    PT_WAIT_WHILE(pt, (t + 1500) < millis());
+
+    long tiempoBucle = millis();
+    while (millis() - tiempoBucle < 1500) {
+      digitalWrite(peaton3, off);
+      t = millis();
+      PT_WAIT_WHILE(pt, millis() - t < 250);
+
+      digitalWrite(peaton3, on);
+      t = millis();
+      PT_WAIT_WHILE(pt, millis() - t < 250);
+    }
+
+    digitalWrite(peaton3, off);
+  }
+
+  PT_END(pt);
+}
+
+static int ptPuls1(struct pt *pt) {
+  PT_BEGIN(pt);
+
+  while (1) {
+    static bool ultimoEstadoBoton = off;  // Guarda el estado anterior del botón
+    int estadoBoton = digitalRead(pulsador1);
+
+    if (estadoBoton == on && ultimoEstadoBoton == off && !peatonEn1) {
+      peatonEn1 = !peatonEn1;  // Cambia el estado del peaton en dicho semaforo
+    }
+
+    ultimoEstadoBoton = estadoBoton;  // Guarda el estado actual del botón
+  }
+
+  PT_END(pt);
+}
+static int ptPuls2(struct pt *pt) {
+  PT_BEGIN(pt);
+
+  while (1) {
+    static bool ultimoEstadoBoton = off;  // Guarda el estado anterior del botón
+    int estadoBoton = digitalRead(pulsador2);
+
+    if (estadoBoton == on && ultimoEstadoBoton == off && !peatonEn2) {
+      peatonEn2 = !peatonEn2;  // Cambia el estado del peaton en dicho semaforo
+    }
+
+    ultimoEstadoBoton = estadoBoton;  // Guarda el estado actual del botón
+  }
+
+  PT_END(pt);
+}
+static int ptPuls3(struct pt *pt) {
+  PT_BEGIN(pt);
+
+  while (1) {
+    static bool ultimoEstadoBoton = off;  // Guarda el estado anterior del botón
+    int estadoBoton = digitalRead(pulsador3);
+
+    if (estadoBoton == on && ultimoEstadoBoton == off && !peatonEn3) {
+      peatonEn3 = !peatonEn3;  // Cambia el estado del peaton en dicho semaforo
+    }
+
+    ultimoEstadoBoton = estadoBoton;  // Guarda el estado actual del botón
+  }
+
+  PT_END(pt);
+}
+
 void setup() {
   iniciarSemaforos();
   
@@ -179,58 +339,33 @@ void setup() {
   pinMode(pulsador2, INPUT);
   pinMode(pulsador3, INPUT);
 
- // PT_INIT(&semaforo1);
+  PT_INIT(&semC1);
+  PT_INIT(&semC2);
+  PT_INIT(&semC3);
+  PT_INIT(&semC4);
+
+  PT_INIT(&semP1);
+  PT_INIT(&semP2);
+  PT_INIT(&semP3);
+
+  PT_INIT(&puls1);
+  PT_INIT(&puls2);
+  PT_INIT(&puls3);
 }
 
 void loop() {
-//  ptSemC1(&semaforo1);
-//  ptSemC2(&semaforo2);
-//  ptSemC3(&semaforo3);
-//  ptSemC4(&semaforo4);
-  int estadoBoton1 = digitalRead(pulsador1);
-  int estadoBoton2 = digitalRead(pulsador2);
-  int estadoBoton3 = digitalRead(pulsador3);
+  ptSemC1(&semC1);
+  ptSemC2(&semC2);
+  ptSemC3(&semC3);
+  ptSemC4(&semC4);
   
-  estadoSemaforo(1, 'v');
-  estadoSemaforo(2, 'v');
-  estadoSemaforo(3, 'v');
-  estadoSemaforo(4, 'v');
-
-  if (estadoBoton1 == on) digitalWrite(peaton1, on);
-  if (estadoBoton2 == on) digitalWrite(peaton2, on);
-  if (estadoBoton3 == on) digitalWrite(peaton3, on);
-
-  delay(500);
-
-  estadoBoton1 = digitalRead(pulsador1);
-  estadoBoton2 = digitalRead(pulsador2);
-  estadoBoton3 = digitalRead(pulsador3);
+  ptPuls1(&puls1);
+  ptPuls2(&puls2);
+  ptPuls3(&puls3);
   
-  estadoSemaforo(1, 'a');
-  estadoSemaforo(2, 'a');
-  estadoSemaforo(3, 'a');
-  estadoSemaforo(4, 'a');
-
-  if (estadoBoton1 == on) digitalWrite(peaton1, on);
-  if (estadoBoton2 == on) digitalWrite(peaton2, on);
-  if (estadoBoton3 == on) digitalWrite(peaton3, on);
-
-  delay(500);
-
-  estadoBoton1 = digitalRead(pulsador1);
-  estadoBoton2 = digitalRead(pulsador2);
-  estadoBoton3 = digitalRead(pulsador3);
-
-  estadoSemaforo(1, 'r');
-  estadoSemaforo(2, 'r');
-  estadoSemaforo(3, 'r');
-  estadoSemaforo(4, 'r');
-
-  if (estadoBoton1 == on) digitalWrite(peaton1, on);
-  if (estadoBoton2 == on) digitalWrite(peaton2, on);
-  if (estadoBoton3 == on) digitalWrite(peaton3, on);
-
-  delay(500);
+  ptSemP1(&semP1);
+  ptSemP2(&semP2);
+  ptSemP3(&semP3);
 }
 
 void estadoSemaforo(int semaforo, char estado) {
