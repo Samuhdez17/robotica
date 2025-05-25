@@ -1,5 +1,3 @@
-#include <gpio_viewer.h>
-
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
 
